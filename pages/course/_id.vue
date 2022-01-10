@@ -86,7 +86,6 @@
                   <div class="course-txt-body-wrap">
                     <section class="course-txt-body">
                         <p v-html="course.description">
-
                         </p>
                     </section>
                   </div>
@@ -124,10 +123,43 @@
                 </div>
                 <!-- /课程大纲 -->
               </article>
+
+                <br/>
+                <el-form ref="form" :model="queryComment" label-width="80px">
+                    <el-form-item label="评论内容">
+                        <el-input type="textarea" v-model="queryComment.content"></el-input>
+                    </el-form-item>
+                    <el-button type="primary" @click="onSubmit">发表评论</el-button>
+                </el-form>
+                    <br/>
+                        <h2>评论列表：</h2>
+                    <br/>
+                <div v-for="(item,i) in commentList" :key="i">
+                    <div>
+                        <div style="float:left">
+                            <el-avatar class="header-img" :size="60" :src="item.avatar"></el-avatar>
+                            <br/>
+                            <span class="reply">{{item.nickname}}</span>
+                        </div>
+                        <div style="float:left">
+                            <h3 class="reply" style="margin-left:70px;text-align:center">
+                                {{item.content}}
+                            </h3>
+                        </div>
+                        <div style="clear:both;"></div>
+                   </div>
+                   <el-divider></el-divider>
+                </div>
+                <el-pagination
+                    background
+                    @current-change="currentChange"
+                    layout="prev, pager, next"
+                    :page-size="size"
+                    :total="total">
+                </el-pagination>
             </div>
           </section>
         </article>
-       
         <aside class="fl col-3">
           <div class="i-box">
             <div>
@@ -163,6 +195,8 @@
 
 <script>
 import courseApi from '@/api/course'
+import commentApi from '@/api/comment'
+import ucenterApi from '@/api/ucenter'
 
 export default {
     layout: 'vido',
@@ -170,13 +204,25 @@ export default {
         return {
             course: {},
             chapterVideoTree: {},
-            vid: '',
+            courseId: '',
             playAuth: '',
+            queryComment: {},
+            current: 1,
+            size: 4,
+            total: 0,
+            commentList: [],
         }
     },
     created(){
+        //获取并设置当前课程id
         this.courseId = this.$route.params.id
+        //获取课程信息
         this.getCourseDetail()
+        //分页查询评论列表
+        this.queryPageComment()
+        
+        //获取并设置当前用户信息
+        this.getUserInfo()
     },
     
     methods: {
@@ -187,7 +233,43 @@ export default {
                 this.chapterVideoTree = response.data.chapterVideoTree
             })
         },
-
+        //获取课程下的评论
+        queryPageComment(current = 1){
+            this.current = current
+            commentApi.queryPageComment(this.courseId,this.current,this.size).then(response => {
+                this.commentList = response.data.list
+                this.total = response.data.total
+            })
+        },
+        //获取当前登录用户信息
+        getUserInfo(){
+            ucenterApi.getLoginInfo().then(response => {
+                this.queryComment.memberId = response.data.items.id
+                this.queryComment.nickname = response.data.items.nickname
+                this.queryComment.avatar = response.data.items.avatar
+                //设置queryComment 便于添加评论
+                this.setQueryComment()
+            })
+        },
+        //设置评论类
+        setQueryComment(){
+            this.queryComment.courseId = this.courseId
+            this.queryComment.teacherId = this.course.teacherId
+        },
+        //发表评论
+        onSubmit(){
+            commentApi.addComment(this.queryComment).then(response => {
+                console.log('--------评论成功-----');
+                console.log(this.queryComment);
+                this.$message.success('评论成功！')
+                this.queryComment.content = ''
+                this.queryPageComment()
+            })
+        },
+        //评论翻页
+        currentChange(current){
+            this.queryPageComment(current)
+        }
     }
 };
 </script>
