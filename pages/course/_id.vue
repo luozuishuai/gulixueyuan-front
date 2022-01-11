@@ -134,19 +134,35 @@
                     <br/>
                         <h2>评论列表：</h2>
                     <br/>
-                <div v-for="(item,i) in commentList" :key="i">
+                <div v-for="(comment,i) in commentList" :key="i">
                     <div>
                         <div style="float:left">
-                            <el-avatar class="header-img" :size="60" :src="item.avatar"></el-avatar>
+                            <el-avatar class="header-img" :size="60" :src="comment.avatar"></el-avatar>
                             <br/>
-                            <span class="reply">{{item.nickname}}</span>
+                            <span class="reply">{{comment.nickname}}</span>
                         </div>
                         <div style="float:left">
                             <h3 class="reply" style="margin-left:70px;text-align:center">
-                                {{item.content}}
+                                {{comment.content}}
                             </h3>
                         </div>
                         <div style="clear:both;"></div>
+
+                            <!-- 评论的回复 -->
+                            <div v-for="(reply,index) in comment.children" :key="index">
+                                <div style="margin-left:150px" >
+                                    <el-avatar class="header-img" :size="30" :src="reply.avatar"></el-avatar>
+                                    <br/>
+                                    <span class="reply">{{reply.nickname}}</span>
+                                </div>
+                                <div>
+                                    <h5 class="reply" style="margin-left:70px;text-align:center">
+                                        {{reply.content}}
+                                    </h5>
+                                </div>
+                            </div>
+ 
+                            
                    </div>
                    <el-divider></el-divider>
                 </div>
@@ -208,7 +224,7 @@ export default {
             playAuth: '',
             queryComment: {},
             current: 1,
-            size: 4,
+            size: 6,
             total: 0,
             commentList: [],
         }
