@@ -147,7 +147,12 @@
                             </h3>
                         </div>
                         <div style="clear:both;"></div>
+                                <el-button style="float:right" @click="replyComment(comment.id,comment.nickname)">
+                                    回复
+                                </el-button>
 
+                                
+                        <div style="clear:both;"></div>
                             <!-- 评论的回复 -->
                             <div v-for="(reply,index) in comment.children" :key="index">
                                 <div style="margin-left:150px" >
@@ -158,9 +163,25 @@
                                 <div>
                                     <h5 class="reply" style="margin-left:70px;text-align:center">
                                         {{reply.content}}
+                                <el-button style="float:right" size="mini" @click="replyReply(reply.id,reply.nickname)">
+                                    回复
+                                </el-button>
                                     </h5>
                                 </div>
                             </div>
+                            <br/>
+
+                        <!-- <div style="clear:both;"></div>
+                            <div>
+                                <el-form ref="form" :style="replyForm" :model="queryComment" label-width="80px">
+                                    <el-form-item label="回复内容">
+                                        <el-input type="textarea" v-model="queryComment.content"></el-input>
+                                    </el-form-item>
+                                    <el-button type="primary" style="float:right" @click="onSubmit">发表回复</el-button>
+                                </el-form>
+                            </div>
+                        <div style="clear:both;"></div> -->
+                                
  
                             
                    </div>
@@ -222,11 +243,14 @@ export default {
             chapterVideoTree: {},
             courseId: '',
             playAuth: '',
-            queryComment: {},
+            queryComment: {
+                content:'',
+            },
             current: 1,
             size: 6,
             total: 0,
             commentList: [],
+
         }
     },
     created(){
@@ -247,6 +271,7 @@ export default {
             courseApi.getCourseDetail(this.courseId).then(response => {
                 this.course = response.data.course
                 this.chapterVideoTree = response.data.chapterVideoTree
+                this.queryComment.teacherId = this.course.teacherId
             })
         },
         //获取课程下的评论
@@ -270,7 +295,7 @@ export default {
         //设置评论类
         setQueryComment(){
             this.queryComment.courseId = this.courseId
-            this.queryComment.teacherId = this.course.teacherId
+            
         },
         //发表评论
         onSubmit(){
@@ -285,6 +310,26 @@ export default {
         //评论翻页
         currentChange(current){
             this.queryPageComment(current)
+        },
+        //回复评论按钮
+        replyComment(id,nickname){
+            this.queryComment.parentId = id
+            this.queryComment.content = `回复@${nickname}：`
+        },
+        //回复回复按钮
+        replyReply(id,nickname){
+            this.queryComment.content = `回复@${nickname}：`
+            for(var i=0;i<this.commentList.length;i++){
+                var comm = this.commentList[i]
+                if(comm.children != null && comm.children.length > 0){
+                    for(var j=0;j<comm.children.length;j++){
+                        var reply = comm.children[j]
+                        if(reply.id == id){
+                            this.queryComment.parentId = this.commentList[i].id
+                        }
+                    }
+                }
+            }
         }
     }
 };
