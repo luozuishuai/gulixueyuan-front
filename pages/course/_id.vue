@@ -12,7 +12,7 @@
       <div>
         <article class="c-v-pic-wrap" style="height: 357px;">
           <section class="p-h-video-box" id="videoPlay">
-            <img :src="course.cover" :alt="course.title" class="dis c-v-pic">
+            <img :src="course.cover" height="357px" :alt="course.title" class="dis c-v-pic">
           </section>
         </article>
         <aside class="c-attr-wrap">
@@ -125,8 +125,8 @@
               </article>
 
                 <br/>
-                <el-form ref="form" :model="queryComment" label-width="80px">
-                    <el-form-item label="评论内容">
+                <el-form ref="form" :model="queryComment" :rules="rules" label-width="80px">
+                    <el-form-item label="评论内容" prop="content">
                         <el-input type="textarea" v-model="queryComment.content"></el-input>
                     </el-form-item>
                     <el-button type="primary" @click="onSubmit">发表评论</el-button>
@@ -250,19 +250,24 @@ export default {
             size: 6,
             total: 0,
             commentList: [],
-
+            rules: {
+                content: [
+                    { required: true, message: '评论内容不能为空', trigger: 'blur'}
+                ]
+            },
         }
     },
     created(){
         //获取并设置当前课程id
         this.courseId = this.$route.params.id
+        this.queryComment.courseId = this.courseId
+
         //获取课程信息
         this.getCourseDetail()
         //分页查询评论列表
         this.queryPageComment()
         
-        //获取并设置当前用户信息
-        this.getUserInfo()
+        
     },
     
     methods: {
@@ -271,6 +276,8 @@ export default {
             courseApi.getCourseDetail(this.courseId).then(response => {
                 this.course = response.data.course
                 this.chapterVideoTree = response.data.chapterVideoTree
+
+                //设置课程对象信息
                 this.queryComment.teacherId = this.course.teacherId
             })
         },
@@ -283,28 +290,32 @@ export default {
             })
         },
         //获取当前登录用户信息
-        getUserInfo(){
-            ucenterApi.getLoginInfo().then(response => {
-                this.queryComment.memberId = response.data.items.id
-                this.queryComment.nickname = response.data.items.nickname
-                this.queryComment.avatar = response.data.items.avatar
-                //设置queryComment 便于添加评论
-                this.setQueryComment()
-            })
-        },
+        // getUserInfo(){
+        //     ucenterApi.getLoginInfo().then(response => {
+        //         this.queryComment.memberId = response.data.items.id
+        //         this.queryComment.nickname = response.data.items.nickname
+        //         this.queryComment.avatar = response.data.items.avatar
+        //         //设置queryComment 便于添加评论
+        //         this.setQueryComment()
+        //     })
+        // },
         //设置评论类
-        setQueryComment(){
-            this.queryComment.courseId = this.courseId
-            
-        },
+        // setQueryComment(){
+        //     this.queryComment.courseId = this.courseId
+        // },
         //发表评论
         onSubmit(){
-            commentApi.addComment(this.queryComment).then(response => {
-                console.log('--------评论成功-----');
-                console.log(this.queryComment);
-                this.$message.success('评论成功！')
-                this.queryComment.content = ''
-                this.queryPageComment()
+            this.$refs['form'].validateField('content',(valid) => {
+                    if(!valid){
+                        //评论内容不为空，则调用接口发送评论
+                        commentApi.addComment2(this.queryComment).then(response => {
+                        console.log('--------评论成功-----');
+                        console.log(this.queryComment);
+                        this.$message.success('评论成功！')
+                        this.queryComment.content = ''
+                        this.queryPageComment()
+                    })
+                }
             })
         },
         //评论翻页

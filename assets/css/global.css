@@ -152,7 +152,7 @@ a.current-2 .lh-p-icon{background-position:0 -254px}
 .h-r-login li{float:left;margin-left:10px;position:relative}
 .h-r-login li a{cursor:pointer;line-height:50px;color:#666;font-size:16px;transition:.3s;-webkit-transition:.3s}
 .h-r-login li.h-r-user a img{border-radius:50%;width:30px;height:30px}
-.h-r-login li.h-r-user span{max-width:160px;height:17px;font-size:16px;line-height:16px;overflow:hidden}
+.h-r-login li.h-r-user span{max-width:60px;height:17px;font-size:16px;line-height:16px;overflow:hidden}
 .red-point{position:absolute;right:-4px;top:8px;display:block;width:8px;height:8px;border-radius:50%;background:#cb2020;text-indent:-9999px}
 .h-r-search{margin:10px 20px 0 0}
 .h-r-s-box{display:block;position:relative}
@@ -218,8 +218,8 @@ a.current-2 .lh-p-icon{background-position:0 -254px}
 .c-infor-title span{border-left:5px solid #333;color:#333;font-size:16px;display:inline-block;line-height:18px;padding-left:10px}
 .paging{padding:50px 0 20px;text-align:center}
 .paging a{border:1px solid #ccc;border-radius:40%;color:#666;display:inline-block;margin:0 5px;height:30px;width:30px;text-align:center;line-height:30px;transition:.3s;-webkit-transition:.3s}
-.paging a.current,.paging a.undisable{cursor:text}
-.paging a.undisable:hover{border:1px solid #ccc;border-radius:40%;color:#666}
+.paging a.current,.paging a.undisable{pointer-events:none;cursor:text}
+.paging a.undisable:hover{pointer-events:none;border:1px solid #ccc;border-radius:40%;color:#666}
 .paging a.current,.paging a:hover{border-radius:50%;text-decoration:none}
 .bMask{background:#000;opacity:.3;filter:alpha(opacity=30);position:fixed;height:100%;width:100%;top:0;right:0;bottom: 0;left:0;z-index:99999}
 .dialogWrap{background:#fff;position:absolute;left:50%;transition:all .3s ease 0s;z-index:9999999}

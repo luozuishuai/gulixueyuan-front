@@ -15,6 +15,14 @@ export default {
             data: comment,
         })
     },
+    // 添加评论2,(无需携带用户信息)
+    addComment2(comment){
+        return request({
+            url: `/edu/front/comment/addComment2`,
+            method: 'post',
+            data: comment,
+        })
+    },
     //删除评论
     deleteComment(id){
         return request({
