@@ -34,7 +34,7 @@
               </span>
             </section>
             <section class="c-attr-mt">
-              <a href="#" title="立即观看" class="comm-btn c-btn-3">立即观看</a>
+              <a href="#" @click="createOrder" title="立即观看" class="comm-btn c-btn-3">{{Number(course.price) == 0 ? '免费观看' : '立即购买'}}</a>
             </section>
           </section>
         </aside>
@@ -234,6 +234,7 @@
 import courseApi from '@/api/course'
 import commentApi from '@/api/comment'
 import ucenterApi from '@/api/ucenter'
+import orderApi from '@/api/orders'
 
 export default {
     layout: 'vido',
@@ -341,6 +342,12 @@ export default {
                     }
                 }
             }
+        },
+        createOrder(){
+            orderApi.createOrder(this.courseId).then(response => {
+                //创建订单，跳转到订单详情页
+                this.$router.push({path: '/orders/'+response.data.orderNo})
+            })
         }
     }
 };
